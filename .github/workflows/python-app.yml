@@ -1,0 +1,37 @@
+name: Run start.py
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  run-script:
+    runs-on: ubuntu-latest
+
+    steps:
+      # 检出代码库
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # 设置 Python 环境
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11' # 可根据需要更改 Python 版本
+
+      # 安装依赖（如果需要 requirements.txt）
+      - name: Install dependencies
+        run: |
+          if [ -f requirements.txt ]; then
+            python -m pip install --upgrade pip
+            pip install -r requirements.txt
+          fi
+
+      # 运行脚本
+      - name: Run changebushu_Action.py
+        run: python changebushu_Action.py
