@@ -1,9 +1,10 @@
 import requests, time, re, json, os
 from random import randint
- 
+
 headers = {
     'User-Agent': 'Dalvik/2.1.0 (Linux; U; Android 9; MI 6 MIUI/20.6.18)'
 }
+
 
 def get_code(location):
     code_pattern = re.compile("(?<=access=).*?(?=&)")
@@ -30,35 +31,51 @@ def login(user, password):
     except:
         return 0, 0
     print("access_code获取成功")
- 
+
     url2 = "https://account.huami.com/v2/client/login"
-    data2 = {
-        "app_name": "com.xiaomi.hm.health",
-        "app_version": "4.6.0",
-        "code": f"{code}",
-        "country_code": "CN",
-        "device_id": "2C8B4939-0CCD-4E94-8CBA-CB8EA6E613A1",
-        "device_model": "phone",
-        "grant_type": "access_token",
-        "third_name": "huami_phone",
-    }
+    if '@' in user:
+        data2 = {
+            "allow_registration=": "false",
+            "app_name": "com.xiaomi.hm.health",
+            "app_version": "6.5.5",
+            "code": f"{code}",
+            "country_code": "CN",
+            "device_id": "2C8B4939-0CCD-4E94-8CBA-CB8EA6E613A1",
+            "device_model": "phone",
+            "dn": "api-user.huami.com%2Capi-mifit.huami.com%2Capp-analytics.huami.com",
+            "grant_type": "access_token",
+            "lang": "zh_CN",
+            "os_version": "1.5.0",
+            "source": "com.xiaomi.hm.health",
+            "third_name": "email",
+        }
+    else:
+        data2 = {
+            "app_name": "com.xiaomi.hm.health",
+            "app_version": "6.5.5",
+            "code": f"{code}",
+            "country_code": "CN",
+            "device_id": "2C8B4939-0CCD-4E94-8CBA-CB8EA6E613A1",
+            "device_model": "phone",
+            "grant_type": "access_token",
+            "third_name": "huami_phone",
+        }
     r2 = requests.post(url2, data=data2, headers=headers).json()
+    print(r2)
     login_token = r2["token_info"]["login_token"]
     print("login_token获取成功")
     userid = r2["token_info"]["user_id"]
     print("userid获取成功")
     return login_token, userid
- 
+
 
 def main():
-    login_token = 0
     login_token, userid = login(user, password)
     if login_token == 0:
         print("登陆失败")
         return "login fail"
 
-    t = get_time()
-
+    t = int(round(time.time() * 1000))
     app_token = get_app_token(login_token)
 
     today = time.strftime("%F")
@@ -77,19 +94,18 @@ def main():
     }
 
     data = f'userid={userid}&last_sync_data_time=1597306380&device_type=0&last_deviceid=DA932FFFFE8816E7&data_json={data_json}'
-
     response = requests.post(url, data=data, headers=head).json()
-    result = response['message'] + f"修改步数: {step}  " 
+    result = response['message'] + f"修改步数: {step}  "
     print(result)
     return result
- 
+
 
 def get_time():
     url = 'http://api.m.taobao.com/rest/api3.do?api=mtop.common.getTimestamp'
     response = requests.get(url, headers=headers).json()
     t = response['data']['t']
     return t
- 
+
 
 def get_app_token(login_token):
     url = f"https://account-cn.huami.com/v1/client/app_tokens?app_name=com.xiaomi.hm.health&dn=api-user.huami.com%2Capi-mifit.huami.com%2Capp-analytics.huami.com&login_token={login_token}&os_version=4.1.0"
@@ -98,11 +114,11 @@ def get_app_token(login_token):
     print("app_token获取成功")
     return app_token
 
- 
+
 def main_handler(event, context):
     return main()
- 
- 
+
+
 if __name__ == "__main__":
     user = os.environ['USER_PHONE']
     password = os.environ['USER_PWD']
