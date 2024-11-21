@@ -3,7 +3,7 @@ name: Run start.py
 on:
   push:
       branches:
-      - master
+      - main
   schedule:
     - cron: '*/5 * * * *'
 
