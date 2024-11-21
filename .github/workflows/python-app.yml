@@ -2,14 +2,11 @@ name: Run start.py
 
 on:
   push:
-    branches:
-      - main
-  pull_request:
-    branches:
-      - main
-  workflow_dispatch:
+      branches:
+      - master
   schedule:
-    - cron: '0 9 * * *'
+    - cron: '*/5 * * * *'
+
 
 jobs:
   run-script:
