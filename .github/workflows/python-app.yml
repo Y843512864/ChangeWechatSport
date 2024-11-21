@@ -2,7 +2,7 @@ name: Run start.py
 
 on:
   schedule:
-    - cron: "20 17 * * *"
+    - cron: "45 9 * * *"
 
 
 jobs:
