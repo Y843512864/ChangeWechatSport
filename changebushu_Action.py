@@ -126,4 +126,5 @@ if __name__ == "__main__":
     print('user:{},step:{}'.format(user, step))
     # step = os.environ['STEP']
     # step = str(randint(10123, 12302)) 
+    print('user:{},step:{}'.format(user, step))
     main()
